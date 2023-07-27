@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bootstrap CRUD Data Table for Database with Modal Form</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="/static/css/style.css">
+
+
+
+  
+  <body>
+
+	<nav class="navbar navbar-default navbar-expand-lg navbar-light">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="">Hello <b>{{request.user}}</b></a>  		
+          <button type="button" data-target="#navbarCollapse" data-toggle="collapse" class="navbar-toggle">
+            <span class="navbar-toggler-icon"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+        </div>
+        <!-- Collection of nav links, forms, and other content for toggling -->
+        <div id="navbarCollapse" class="collapse navbar-collapse">
+          
+          {% if user.is_authenticated %}
+          <form method="post" action="{% url 'logout' %}" class="nav navbar-nav navbar-right">
+            {% csrf_token %}
+            
+            <input type="hidden" name="next" value="{{ request.path }}">
+            
+            <!-- Other form fields -->
+            
+            <ul class="nav navbar-nav navbar-right"><li><button type="submit" class="btn btn-primary btn-block"> logout</button></li></ul>
+          </form>
+          
+          
+          
+          {% else %}
+                <ul class="nav navbar-nav navbar-right">			
+                  <li>
+                    <a data-toggle="dropdown" class="dropdown-toggle" href="#">Login</a>
+                    <ul class="dropdown-menu form-wrapper">					
+                      <li>
+                        <form method="post" action="{% url 'login' %}">
+                          {% csrf_token %}
+                          {% comment %} <p class="hint-text">Sign in with your social media account</p>
+                          <div class="form-group social-btn clearfix">
+                            <a href="#" class="btn btn-primary pull-left"><i class="fa fa-facebook"></i> Facebook</a>
+                            <a href="#" class="btn btn-info pull-right"><i class="fa fa-twitter"></i> Twitter</a>
+                          </div>
+                          <div class="or-seperator"><b>or</b></div> {% endcomment %}
+                          <div class="form-group">
+                            <input type="text" class="form-control" placeholder="Username" name="user" required="required" autocomplete="off">
+                          </div>
+                          <div class="form-group">
+                            <input type="password" class="form-control" placeholder="Password"  name="password" required="required" autocomplete="off">
+                          </div>
+                          <input type="submit" value="Login" class="btn float-right login_btn" />
+                          <input type="hidden" name="next" value="{{ request.path }}" autocomplete="off">
+                          <div class="form-footer">
+                            <a href="#">Forgot Your password?</a>
+                          </div>
+                        </form>
+                      </li>
+                    </ul>
+                  </li>
+                  <li>
+                    <a href="#" data-toggle="dropdown" class="btn btn-primary dropdown-toggle get-started-btn mt-1 mb-1">Sign up</a>
+                    <ul class="dropdown-menu form-wrapper">					
+                      <li>
+                        <form action="{% url 'signup' %}" method="post">
+                          {% csrf_token %}
+                          <p class="hint-text">Fill in this form to create your account!</p>
+                          <div class="form-group">
+                            <input type="text" class="form-control" placeholder="Username" name="user" required="required" autocomplete="off">
+                          </div>
+                          <div class="form-group">
+                            <input type="email" class="form-control" placeholder="Email" required="required" name="email" autocomplete="off">
+                          </div>
+  
+                          <div class="form-group">
+                            <input type="password" class="form-control" placeholder="Password" name="password" required="required" autocomplete="off">
+                          </div>
+                         
+                          <div class="form-group">
+                            <label class="checkbox-inline"><input type="checkbox" required="required"> I accept the <a href="#">Terms &amp; Conditions</a></label>
+                            <input type="hidden" name="next" value="{{ request.path }}">
+                          </div>
+                          <input type="submit" class="btn btn-primary btn-block" value="Sign up">
+                        </form>
+                      </li>
+                    </ul>
+                  </li>
+  
+                  
+              {% endif %}
+  
+            
+          </ul>
+        </div>
+      </nav>
+
+    {% block body %}{% endblock body %}
+	
+
+
+
+</body>
+
+
+<script>
+    $(document).ready(function(){
+	// Activate tooltip
+	$('[data-toggle="tooltip"]').tooltip();
+	
+	// Select/Deselect checkboxes
+	var checkbox = $('table tbody input[type="checkbox"]');
+	$("#selectAll").click(function(){
+		if(this.checked){
+			checkbox.each(function(){
+				this.checked = true;                        
+			});
+		} else{
+			checkbox.each(function(){
+				this.checked = false;                        
+			});
+		} 
+	});
+	checkbox.click(function(){
+		if(!this.checked){
+			$("#selectAll").prop("checked", false);
+		}
+	});
+});
+</script>
+</html>

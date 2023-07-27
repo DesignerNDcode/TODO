@@ -1,0 +1,277 @@
+{% extends 'basic.html' %}
+
+{% block body %}
+{% if user.is_authenticated %}
+	<div class="container">
+        <div class="table-wrapper">
+            <div class="table-title">
+                <div class="row">
+                    <div class="col-sm-6">
+						<h2>Manage <b>Tasks</b></h2>
+					</div>
+					<div class="col-sm-6">
+						<a href="#addTaskModal" class="btn btn-success" data-toggle="modal"><i class="material-icons">&#xE147;</i> <span>Add New Task</span></a>
+						<a href="#clearTaskModal" class="btn btn-danger" data-toggle="modal"><i class="material-icons">&#xE15C;</i> <span>Clear All</span></a>						
+					</div>
+                </div>
+            </div>
+		
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+						<th>
+							<span class="custom-checkbox">
+								<input type="checkbox" id="selectAll">
+								<label for="selectAll"></label>
+							</span>
+						</th>
+                        <th>Name</th>
+                        <th>Description</th>
+						<th>End time</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+					
+					{% for data in list_data %}
+					
+					<tr>
+						<td>
+							<span class="custom-checkbox">
+								<input type="checkbox" id="checkbox5" name="options[]" value="1">
+								<label for="checkbox5"></label>
+							</span>
+						</td>
+                        <td>{{data.name}}</td>
+                        <td>{{data.desc}}</td>
+
+						<td>{{data.end_time}}</td>
+                        <td id="{{data.status}}" class="status{{data.id}}">{{data.status}}</td>
+                        <td>
+                            <a href="#editTaskModal{{data.id}}" class="edit" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Edit">&#xE254;</i></a>
+                            <a href="#deleteTaskModal{{data.id}}" class="delete" data-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
+                        </td>
+                    </tr> 
+					
+					
+
+					<!-- JS code done with chat gpt -->
+					<script>
+						
+						if ("{{data.status}}" != "completed"){
+							// Replace this with your target date and time in the format "HH:mm/yyyy-MM-dd"
+						var targetDateTime = "{{data.end_time}}";
+					  
+						// Extract the target date and time components
+						var targetTime = targetDateTime.split('/')[0];
+						var targetDate = new Date(targetDateTime.split('/')[1]);
+					  
+						// Get the current date and time components
+						var currentDate = new Date();
+						var currentYear = currentDate.getFullYear();
+						var currentMonth = currentDate.getMonth() + 1; // Months are zero-indexed, so we add 1
+						var currentDay = currentDate.getDate();
+						var currentHour = currentDate.getHours();
+						var currentMinute = currentDate.getMinutes();
+					  
+						// Extract the target time components
+						var targetHour = parseInt(targetTime.split(':')[0]);
+						var targetMinute = parseInt(targetTime.split(':')[1]);
+					  
+						// Compare the target date and time with the current date and time
+						if (targetDate.getFullYear() < currentYear ||
+							(targetDate.getFullYear() === currentYear && targetDate.getMonth() + 1 < currentMonth) ||
+							(targetDate.getFullYear() === currentYear && targetDate.getMonth() + 1 === currentMonth && targetDate.getDate() < currentDay) ||
+							(targetDate.getFullYear() === currentYear && targetDate.getMonth() + 1 === currentMonth && targetDate.getDate() === currentDay && targetHour < currentHour) ||
+							(targetDate.getFullYear() === currentYear && targetDate.getMonth() + 1 === currentMonth && targetDate.getDate() === currentDay && targetHour === currentHour && targetMinute < currentMinute)) {
+								var element = document.querySelector('.status' + {{data.id}});
+								console.log('status' + {{data.id}})
+   								element.classList.add("overdue");
+								element.innerHTML = 'overdue';
+								console.log(element)
+					
+										
+								
+								
+						} else {
+						  console.log("Status: Not overdue");
+						}
+						}
+					  </script>
+					<!-- JS code done with chat gpt -->
+					
+					
+							  
+
+					{% endfor %}
+
+					
+                </tbody>
+            </table>
+
+			
+
+								
+							
+			{% comment %} <div class="clearfix">
+                <div class="hint-text">Showing <b>5</b> out of <b>25</b> entries</div>
+                <ul class="pagination">
+                    <li class="page-item disabled"><a href="#">Previous</a></li>
+                    <li class="page-item"><a href="#" class="page-link">1</a></li>
+                    <li class="page-item"><a href="#" class="page-link">2</a></li>
+                    <li class="page-item active"><a href="#" class="page-link">3</a></li>
+                    <li class="page-item"><a href="#" class="page-link">4</a></li>
+                    <li class="page-item"><a href="#" class="page-link">5</a></li>
+                    <li class="page-item"><a href="#" class="page-link">Next</a></li>
+                </ul>
+            </div>
+        </div> {% endcomment %}
+    </div>
+	<!-- Edit Modal HTML -->
+	<div id="addTaskModal" class="modal fade">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form method="post" action="{% url 'add' %}">
+					{% csrf_token %}
+					<div class="modal-header">						
+						<h4 class="modal-title">Add Task</h4>
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					</div>
+					<div class="modal-body">					
+						<div class="form-group">
+							<label>Name</label>
+							<input name="name" type="text" class="form-control" required autocomplete="off">
+						</div>
+						<div class="form-group">
+							<label>Description</label>
+							<input name="desc" type="text" class="form-control" required autocomplete="off">
+						</div>
+						<div class="form-group">
+							<label>End time</label>
+							<input name="date" type="date" name="end-date" min={new Date().toISOString().split('T')[0]}>
+							<input name="time" type="time" name="end-time">
+							<input type="hidden" name="user_name" value="{{user}}">
+						</div>
+										
+					</div>
+					<div class="modal-footer">
+						<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+						<input type="submit" class="btn btn-success" value="Add">
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<!-- Edit Modal HTML -->
+	{% for data in list_data %}
+	<div id="editTaskModal{{data.id}}" class="modal fade">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				
+				<form method="post" action="{% url 'edit' data.id %}">
+					{% csrf_token %}
+					<div class="modal-header">						
+						<h4 class="modal-title">Edit Task</h4>
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					</div>
+					<div class="modal-body">					
+						<div class="form-group">
+							<label>Name</label>
+							<input type="text" class="form-control" required value="{{data.name}}" name="name" autocomplete="off">
+						</div>
+						<div class="form-group">
+							<label>Description</label>
+							<input type="text" class="form-control" required value="{{data.desc}}" name="desc" autocomplete="off">
+						</div>
+						<div class="form-group">
+							<label>End time</label>
+							<input type="text" value="{{data.end_time}}" name="end_date" >
+
+						</div>
+						<div class="form-group">
+							<label>Completed?</label>
+							<input type="checkbox" name="status" id="myCheck{{data.id}}" value="completed">
+
+							{% if data.status == "completed" %}
+							
+							<script>
+								document.getElementById("myCheck{{data.id}}").checked = true;
+						  </script>
+							{% endif %}
+
+						</div>					
+					</div>
+					<div class="modal-footer">
+						<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+						
+						<input type="submit" class="btn btn-info" id="save{{data.id}}" value="Save">
+					</div>
+				</form>
+				
+			</div>
+		</div>
+	</div>
+	{% endfor %}
+
+	{% for data in list_data %}
+	<!-- Delete Modal HTML -->
+	<div id="deleteTaskModal{{data.id}}" class="modal fade">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form>
+					<div class="modal-header">						
+						<h4 class="modal-title">Delete Task</h4>
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					</div>
+					<div class="modal-body">					
+						<p>Are you sure you want to delete these Records?</p>
+						<p class="text-warning"><small>This action cannot be undone.</small></p>
+					</div>
+					<div class="modal-footer">
+						<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+
+						<a href="{% url 'delete' data.id %}">
+							<button type="button" class="btn btn-danger">Delete</button>
+						  </a>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	{% endfor %}
+	<!-- delete Modal HTML -->
+	<div id="clearTaskModal" class="modal fade" >
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<form action="{% url 'clear' %}" method="post">
+					{% csrf_token %}
+					<div class="modal-header">						
+						<h4 class="modal-title">Delete Task</h4>
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					</div>
+					<div class="modal-body">					
+						<p>Are you sure you want to delete these Records?</p>
+						<p class="text-warning"><small>This action cannot be undone.</small></p>
+					</div>
+					<div class="modal-footer">
+						<input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
+						<input type="submit" class="btn btn-danger" value="Clear">
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	{% else %}
+	
+					<div class="jumbotron container p-5">
+						<h1 class="display-4">Welcome To TO_DO APP</h1>
+						<p class="lead">Created by Abdul Muhaimin[Founder of <a href="https://designerndcode.tk/" target="_blank">DesignerNDcode</a>]</p>
+						<hr class="my-4">
+						<p>Login and start adding daily tasks...</p>
+					  </div>
+					
+
+					{% endif %}
+	
+	{% endblock body %}
